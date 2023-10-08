@@ -1,6 +1,4 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.css'
 
 import WebApp from '@twa-dev/sdk'
@@ -9,18 +7,11 @@ import PhotoUpload from "./PhotoUpload.tsx";
 function App() {
   const [count, setCount] = useState(0)
   const [test, setTest] = useState('')
+  const [test2, setTest2] = useState('')
   // const [photo, setPhoto] = useState();
 
   return (
     <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
       <h1>Vite + React</h1>
       <div className="card">
         <button onClick={() => setCount((count) => count + 1)}>
@@ -41,11 +32,22 @@ function App() {
       </div>
       <div className="card">
         <button onClick={() => {
-          let callback
-          const a = WebApp.CloudStorage.getKeys(callback)
-          setTest(JSON.stringify(a))
-          console.log(test)
-          console.log(callback)
+          WebApp.CloudStorage.getKeys((error, keys) => {
+            if (error !== null) {
+              console.error('error: ', keys)
+              return
+            }
+
+            WebApp.CloudStorage.getItems(keys!, (error, result) => {
+              if (error !== null) {
+                console.error('error: ', keys)
+                return
+              }
+              setTest(JSON.stringify(result))
+              setTest2(result![0])
+              console.log(result)
+            })
+          })
         }}>
           Show Alert
         </button>
@@ -53,9 +55,9 @@ function App() {
       <div className="card">
         <textarea>{ test }</textarea>
       </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <div className="card">
+        <label>{ test2 }</label>
+      </div>
     </>
   )
 }
